@@ -1,0 +1,7 @@
+version: "3"
+services:
+  myls:
+    build: .
+    volumes:
+      - .:/myls
+    working_dir: /myls
