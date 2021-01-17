@@ -1,0 +1,17 @@
+version: "3"
+
+x-base: &base
+  build: .
+  working_dir: /httprouter
+  volumes:
+    - .:/httprouter
+  ports:
+    - "5234:5234"
+
+services:
+  httproutersample:
+    <<: *base
+    command: >
+      sh -c '
+        go run sample/main.go
+      '
