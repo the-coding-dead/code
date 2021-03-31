@@ -27,8 +27,6 @@ type file struct {
 }
 
 func setup(t *testing.T, srcDir string) *memo {
-	t.Helper()
-
 	memo := &memo{
 		dir:  make([]file, 0),
 		file: make(map[file]string),
