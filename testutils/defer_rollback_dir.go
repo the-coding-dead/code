@@ -1,6 +1,7 @@
 package testutils
 
 import (
+	"errors"
 	"io"
 	"os"
 	"path/filepath"
@@ -17,8 +18,9 @@ func DeferRollbackDir(t *testing.T, srcDir string) {
 }
 
 type memo struct {
-	dir  []file
-	file map[file]string
+	srcDir string
+	dir    []file
+	file   map[file]string
 }
 
 type file struct {
@@ -28,8 +30,9 @@ type file struct {
 
 func setup(t *testing.T, srcDir string) *memo {
 	memo := &memo{
-		dir:  make([]file, 0),
-		file: make(map[file]string),
+		srcDir: srcDir,
+		dir:    make([]file, 0),
+		file:   make(map[file]string),
 	}
 
 	var fileNameCnt int
@@ -79,8 +82,12 @@ func setup(t *testing.T, srcDir string) *memo {
 }
 
 func teardown(t *testing.T, memo *memo) {
+	if err := os.RemoveAll(memo.srcDir); err != nil {
+		t.Fatal(err)
+	}
+
 	for _, dir := range memo.dir {
-		if _, err := os.Stat(dir.path); os.IsNotExist(err) {
+		if _, err := os.Stat(dir.path); errors.Is(err, os.ErrNotExist) {
 			if err := os.Mkdir(dir.path, dir.mode); err != nil {
 				t.Fatal(err)
 			}
